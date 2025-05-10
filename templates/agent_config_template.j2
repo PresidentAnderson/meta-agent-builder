@@ -1,0 +1,23 @@
+agent:
+  name: {{ agent_name }}
+  description: {{ description }}
+  model: gpt-4o
+  runtime_env: python:3.11
+  task_type: {{ agent_type }}
+  created_at: "{{ timestamp }}"
+
+interfaces:
+  - input: JSON
+  - output: YAML
+
+integrations:
+{% for i in integrations %}
+  - {{ i }}
+{% endfor %}
+
+permissions:
+  - restricted
+
+monitoring:
+  logging: true
+  metrics: prometheus

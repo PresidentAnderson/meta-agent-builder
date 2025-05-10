@@ -1,0 +1,15 @@
+
+site_name: Meta-Agent Builder
+site_description: Build, deploy, and scale intelligent agents with automation
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - codehilite
+  - pymdownx.superfences
