@@ -1,0 +1,23 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ "staging" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        run: |
+          curl -sL https://github.com/digitalocean/doctl/releases/download/v1.101.0/doctl-1.101.0-linux-amd64.tar.gz | tar -xz
+          sudo mv doctl /usr/local/bin
+
+      - name: Auth with DigitalOcean
+        run: doctl auth init -t ${{ secrets.DO_API_TOKEN }}
+
+      - name: Deploy to Staging App
+        run: doctl apps update ${{ secrets.DO_APP_ID_STAGING }} --spec config/app.staging.yaml
