@@ -12,7 +12,7 @@ Meta-Agent Builder is an enterprise-grade automation tool that enables you to:
 ## 🔧 Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/meta-agent-builder.git
+git clone https://github.com/presidentanderson/meta-agent-builder.git
 cd meta-agent-builder
 pip install -r requirements.txt
 ```
@@ -26,7 +26,7 @@ python meta_agent.py --desc "Build me an agent that handles check-in queries and
 ## 📄 Documentation
 Live docs powered by MkDocs + Material Theme:
 ```
-https://your-username.github.io/meta-agent-builder/
+https://presidentanderson.github.io/meta-agent-builder/
 ```
 
 ## 🧪 Testing
