@@ -1,0 +1,17 @@
+name: meta-agent-app
+region: nyc # or tor1 for Toronto
+services:
+  - name: meta-agent
+    github:
+      repo: PresidentAnderson/meta-agent-builder
+      branch: main
+      deploy_on_push: true
+    envs:
+      - key: ENV
+        value: production
+    run_command: python meta_agent.py
+    dockerfile_path: Dockerfile
+    source_dir: /
+    http_port: 8080
+    instance_size_slug: basic-xxs
+    instance_count: 1
