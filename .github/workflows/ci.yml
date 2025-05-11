@@ -1,80 +1,26 @@
-
 name: Full CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
-
-env:
-  SSH_USER: ${{ secrets.SSH_USER }}
-  SSH_HOST: ${{ secrets.SSH_HOST }}
-  SSH_KEY: ${{ secrets.SSH_KEY }}
-  TEAMS_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
+    branches: [ "main" ]
 
 jobs:
-  build-test-deploy:
-
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Show working directory
+        run: pwd
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: List files in root
+        run: ls -la
 
-    - name: Run Agent Generation Test
-      run: |
-        python meta_agent.py --desc "Test deployment agent for guest check-in automation"
+      - name: Build Docker image
+        run: docker build -t meta-agent-builder:latest .
 
-    - name: Run Placeholder Unit Tests
-      run: |
-        echo "No tests yet — placeholder only"
+      - name: Run container (Optional – just for debug)
+        run: docker run --rm meta-agent-builder:latest
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Build Docker Image
-      run: |
-        docker build -t meta-agent-builder:latest .
-
-    - name: Push to DockerHub
-      if: github.event_name != 'pull_request'
-      env:
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      run: |
-        echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
-        docker tag meta-agent-builder:latest $DOCKERHUB_USERNAME/meta-agent-builder:latest
-        docker push $DOCKERHUB_USERNAME/meta-agent-builder:latest
-
-    - name: Deploy to Remote Server via SSH
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ env.SSH_HOST }}
-        username: ${{ env.SSH_USER }}
-        key: ${{ env.SSH_KEY }}
-        script: |
-          docker pull $DOCKERHUB_USERNAME/meta-agent-builder:latest
-          docker stop meta-agent || true
-          docker rm meta-agent || true
-          docker run -d --name meta-agent $DOCKERHUB_USERNAME/meta-agent-builder:latest
-
-    - name: Post Run Notification to Teams
-      uses: skitionek/notify-microsoft-teams@v1
-      with:
-        webhook_url: ${{ env.TEAMS_WEBHOOK }}
-        needs: build-test-deploy
-        job_status: ${{ job.status }}
-        title: Meta-Agent Builder Workflow
-        summary: "CI/CD pipeline completed successfully."
-        theme_color: "00FF00"
