@@ -45,4 +45,4 @@ pytest
 Please see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## 🛠 License
-MIT License
+Apache 2.0
